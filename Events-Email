@@ -1,0 +1,208 @@
+# CallMeR RouterOS Notification
+:global AccountGlobalEndID;
+:global FirewallGlobalEndID;
+:global PPPoEGlobalEndID;
+:global DHCPGlobalEndID;
+:global SystemGlobalEndID;
+
+### Shared variables
+:local DeviceName [/system identity get name];
+:local Time [/system clock get time];
+:local Date [/system clock get date];
+:local SendFrom "aaa@163.com";      # Need to customize
+:local SendTo "bbb@qq.com";         # Need to customize
+### Shared variables End
+
+### Account variables
+:local AccountEmailText;
+:local GetAccountIDs [/log find where message ~ "user"];
+:local LenAccountIDs [:len $GetAccountIDs];
+:if ($AccountGlobalEndID = nothing) do={:set AccountGlobalEndID ($GetAccountIDs -> ($LenAccountIDs-$LenAccountIDs))}; #Change
+:local AccountStartID [:find $GetAccountIDs $AccountGlobalEndID];
+:local AccountEndID ($GetAccountIDs -> ($LenAccountIDs-1));
+### Account variables End
+
+### Firewall variables
+:local FirewallEmailText;
+:local GetFirewallIDs [/log find where topics ~ "firewall"];
+:local LenFirewallIDs [:len $GetFirewallIDs];
+:if ($FirewallGlobalEndID = nothing) do={:set FirewallGlobalEndID ($GetFirewallIDs -> ($LenFirewallIDs-$LenFirewallIDs))}; #Change
+:local FirewallStartID [:find $GetFirewallIDs $FirewallGlobalEndID];
+:local FirewallEndID ($GetFirewallIDs -> ($LenFirewallIDs-1));
+### Firewall variables End
+
+### PPPoE variables
+:local PPPoEEmailText;
+:local GetPPPoEIDs [/log find where topics ~ "pppoe"];
+:local LenPPPoEIDs [:len $GetPPPoEIDs];
+:if ($PPPoEGlobalEndID = nothing) do={:set PPPoEGlobalEndID ($GetPPPoEIDs -> ($LenPPPoEIDs-$LenPPPoEIDs))}; #Change
+:local PPPoEStartID [:find $GetPPPoEIDs $PPPoEGlobalEndID];
+:local PPPoEEndID ($GetPPPoEIDs -> ($LenPPPoEIDs-1));
+### PPPoE variables End
+
+### DHCP variables
+:local DHCPEmailText;
+:local GetDHCPIDs [/log find where topics ~ "dhcp"];
+:local LenDHCPIDs [:len $GetDHCPIDs];
+:if ($DHCPGlobalEndID = nothing) do={:set DHCPGlobalEndID ($GetDHCPIDs -> ($LenDHCPIDs-$LenDHCPIDs))}; #Change
+:local DHCPStartID [:find $GetDHCPIDs $DHCPGlobalEndID];
+:local DHCPEndID ($GetDHCPIDs -> ($LenDHCPIDs-1));
+### DHCP variables End
+
+### System variables
+:local SystemEmailText;
+:local GetSystemIDs [/log find where topics ~ "system"];
+:local LenSystemIDs [:len $GetSystemIDs];
+:if ($SystemGlobalEndID = nothing) do={:set SystemGlobalEndID ($GetSystemIDs -> ($LenSystemIDs-$LenSystemIDs))}; #Change
+:local SystemStartID [:find $GetSystemIDs $SystemGlobalEndID];
+:local SystemEndID ($GetSystemIDs -> ($LenSystemIDs-1));
+### System variables End
+
+
+### Account Mail
+:if ($AccountEndID != $AccountGlobalEndID and [:tobool $AccountGlobalEndID] ) do={
+
+    #:log info ("Parseing Account Logs");
+    :for AccountKeyArray from=($AccountStartID) to=($LenAccountIDs-1) do={
+        :local AccountIDMessage ($GetAccountIDs ->$AccountKeyArray );
+        :set AccountEmailText "$AccountEmailText \n\r  $[/log get number=$AccountIDMessage time] - $[/log get number=$AccountIDMessage message];";
+        }
+
+    # START SEND EMAIL
+    :local MailIp;
+    :set MailIp [:resolve smtp.163.com];  # Need to customize
+    :delay 1s;
+    
+    :local Uptime [/system resource get uptime];
+    :local Project "USER AUTH";
+
+    :local Subject "DEVICE $Project: [Device: $DeviceName] [Uptime: $Uptime] [$Date $Time] ";
+    :local AccountBody "== DEVICE $Project == \n $AccountEmailText";
+    :local FileName "";
+    
+    #:log info ("About to send $Project E-mail")
+    /tool e-mail send server=$MailIp port=465 tls=yes from=$SendFrom to=$SendTo subject=$Subject body=$AccountBody;
+    :delay 5s;
+    # END SEND EMAIL
+}
+### Account Mail End
+
+### Firewall Mail
+:if ($FirewallEndID != $FirewallGlobalEndID and [:tobool $FirewallGlobalEndID] ) do={
+
+    #:log info ("Parseing Firewall Logs");
+    :for FirewallKeyArray from=($FirewallStartID) to=($LenFirewallIDs-1) do={
+        :local FirewallIDMessage ($GetFirewallIDs ->$FirewallKeyArray );
+        :set FirewallEmailText "$FirewallEmailText \n\r  $[/log get number=$FirewallIDMessage time] - $[/log get number=$FirewallIDMessage message];";
+        }
+
+    # START SEND EMAIL
+    :local MailIp;
+    :set MailIp [:resolve smtp.163.com];  # Need to customize
+    :delay 1s;
+    
+    :local Uptime [/system resource get uptime];
+    :local Project "FIREWALL EVENT";
+
+    :local Subject "DEVICE $Project: [Device: $DeviceName] [Uptime: $Uptime] [$Date $Time] ";
+    :local FirewallBody "== DEVICE $Project == \n $FirewallEmailText";
+    :local FileName "";
+    
+    #:log info ("About to send $Project E-mail")
+    /tool e-mail send server=$MailIp port=465 tls=yes from=$SendFrom to=$SendTo subject=$Subject body=$FirewallBody;
+    :delay 10s;
+    # END SEND EMAIL
+}
+### Firewall Mail End
+
+### PPPoE Mail
+:if ($PPPoEEndID != $PPPoEGlobalEndID and [:tobool $PPPoEGlobalEndID] ) do={
+
+    #:log info ("Parseing PPPoE Logs");
+    :for PPPoEKeyArray from=($PPPoEStartID) to=($LenPPPoEIDs-1) do={
+        :local PPPoEIDMessage ($GetPPPoEIDs ->$PPPoEKeyArray );
+        :set PPPoEEmailText "$PPPoEEmailText \n\r  $[/log get number=$PPPoEIDMessage time] - $[/log get number=$PPPoEIDMessage message];";
+        }
+
+    # START SEND EMAIL
+    :local MailIp;
+    :set MailIp [:resolve smtp.163.com];  # Need to customize
+    :delay 1s;
+    
+    :local Uptime [/system resource get uptime];
+    :local Project "PPPoE";
+
+    :local Subject "DEVICE $Project: [Device: $DeviceName] [Uptime: $Uptime] [$Date $Time] ";
+    :local PPPoEBody "== DEVICE $Project == \n $PPPoEEmailText";
+    :local FileName "";
+    
+    #:log info ("About to send $Project E-mail")
+    /tool e-mail send server=$MailIp port=465 tls=yes from=$SendFrom to=$SendTo subject=$Subject body=$PPPoEBody;
+    :delay 5s;
+    # END SEND EMAIL
+}
+### PPPoE Mail End
+
+### DHCP Mail
+:if ($DHCPEndID != $DHCPGlobalEndID and [:tobool $DHCPGlobalEndID] ) do={
+
+    #:log info ("Parseing DHCP Logs");
+    :for DHCPKeyArray from=($DHCPStartID) to=($LenDHCPIDs-1) do={
+        :local DHCPIDMessage ($GetDHCPIDs ->$DHCPKeyArray );
+        :set DHCPEmailText "$DHCPEmailText \n\r  $[/log get number=$DHCPIDMessage time] - $[/log get number=$DHCPIDMessage message];";
+        }
+
+    # START SEND EMAIL
+    :local MailIp;
+    :set MailIp [:resolve smtp.163.com];  # Need to customize
+    :delay 1s;
+    
+    :local Uptime [/system resource get uptime];
+    :local Project "DHCP LEASE";
+
+    :local Subject "DEVICE $Project: [Device: $DeviceName] [Uptime: $Uptime] [$Date $Time] ";
+    :local DHCPBody "== DEVICE $Project == \n $DHCPEmailText";
+    :local FileName "";
+    
+    #:log info ("About to send $Project E-mail")
+    /tool e-mail send server=$MailIp port=465 tls=yes from=$SendFrom to=$SendTo subject=$Subject body=$DHCPBody;
+    :delay 10s;
+    # END SEND EMAIL
+}
+### DHCP Mail End
+
+### System Mail
+:if ($SystemEndID != $SystemGlobalEndID and [:tobool $SystemGlobalEndID] ) do={
+
+    #:log info ("Parseing System Logs");
+    :for SystemKeyArray from=($SystemStartID) to=($LenSystemIDs-1) do={
+        :local SystemIDMessage ($GetSystemIDs ->$SystemKeyArray );
+        :set SystemEmailText "$SystemEmailText \n\r  $[/log get number=$SystemIDMessage time] - $[/log get number=$SystemIDMessage message];";
+        }
+
+    # START SEND EMAIL
+    :local MailIp;
+    :set MailIp [:resolve smtp.163.com];  # Need to customize
+    :delay 1s;
+    
+    :local Uptime [/system resource get uptime];
+    :local Project "SYSTEM EVENT";
+
+    :local Subject "DEVICE $Project: [Device: $DeviceName] [Uptime: $Uptime] [$Date $Time] ";
+    :local SystemBody "== DEVICE $Project == \n $SystemEmailText";
+    :local FileName "";
+    
+    #:log info ("About to send $Project E-mail")
+    /tool e-mail send server=$MailIp port=465 tls=yes from=$SendFrom to=$SendTo subject=$Subject body=$SystemBody;
+    :delay 5s;
+    # END SEND EMAIL
+}
+### System Mail End
+
+
+:set AccountGlobalEndID $AccountEndID;
+:set FirewallGlobalEndID $FirewallEndID;
+:set PPPoEGlobalEndID $PPPoEEndID;
+:set DHCPGlobalEndID $DHCPEndID;
+:set SystemGlobalEndID $SystemEndID;
+# Notification End
