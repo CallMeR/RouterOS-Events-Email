@@ -12,10 +12,13 @@
 :local Time [/system clock get time];
 :local Date [/system clock get date];
 :local MailServer "smtp.163.com";       # Need to customize
+:local MailIp;
+:set MailIp [:resolve $MailServer];
 :local MailPort "465";                  # Need to customize
 :local MailTls "yes";                   # Need to customize
 :local SendFrom "aaa@163.com";          # Need to customize
 :local SendTo "bbb@qq.com";             # Need to customize
+:delay 1s;
 ### Shared variables End
 
 ### System variables
@@ -82,11 +85,6 @@
         :set SystemEmailText "$SystemEmailText \n\r  $[/log get number=$SystemIDMessage time] - $[/log get number=$SystemIDMessage message]";
         }
 
-    # START SEND EMAIL
-    :local MailIp;
-    :set MailIp [:resolve $MailServer];
-    :delay 1s;
-    
     :local Uptime [/system resource get uptime];
     :local Project "SYSTEM EVENT";
 
@@ -110,11 +108,6 @@
         :set PPPoEEmailText "$PPPoEEmailText \n\r  $[/log get number=$PPPoEIDMessage time] - $[/log get number=$PPPoEIDMessage message]";
         }
 
-    # START SEND EMAIL
-    :local MailIp;
-    :set MailIp [:resolve $MailServer];
-    :delay 1s;
-    
     :local Uptime [/system resource get uptime];
     :local Project "PPPoE";
 
@@ -138,11 +131,6 @@
         :set ScriptEmailText "$ScriptEmailText \n\r  $[/log get number=$ScriptIDMessage time] - $[/log get number=$ScriptIDMessage message]";
         }
 
-    # START SEND EMAIL
-    :local MailIp;
-    :set MailIp [:resolve $MailServer];
-    :delay 1s;
-    
     :local Uptime [/system resource get uptime];
     :local Project "SCRIPT EVENT";
 
@@ -166,11 +154,6 @@
         :set AccountEmailText "$AccountEmailText \n\r  $[/log get number=$AccountIDMessage time] - $[/log get number=$AccountIDMessage message]";
         }
 
-    # START SEND EMAIL
-    :local MailIp;
-    :set MailIp [:resolve $MailServer];
-    :delay 1s;
-    
     :local Uptime [/system resource get uptime];
     :local Project "USER AUTH";
 
@@ -194,11 +177,6 @@
         :set FirewallEmailText "$FirewallEmailText \n\r  $[/log get number=$FirewallIDMessage time] - $[/log get number=$FirewallIDMessage message]";
         }
 
-    # START SEND EMAIL
-    :local MailIp;
-    :set MailIp [:resolve $MailServer];
-    :delay 1s;
-    
     :local Uptime [/system resource get uptime];
     :local Project "FIREWALL EVENT";
 
@@ -222,11 +200,6 @@
         :set DHCPEmailText "$DHCPEmailText \n\r  $[/log get number=$DHCPIDMessage time] - $[/log get number=$DHCPIDMessage message]";
         }
 
-    # START SEND EMAIL
-    :local MailIp;
-    :set MailIp [:resolve $MailServer];
-    :delay 1s;
-    
     :local Uptime [/system resource get uptime];
     :local Project "DHCP LEASE";
 
