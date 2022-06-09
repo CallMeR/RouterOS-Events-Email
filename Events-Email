@@ -11,15 +11,18 @@
 :local DeviceName [/system identity get name];
 :local Time [/system clock get time];
 :local Date [/system clock get date];
-:local MailServer "smtp.163.com";       # Need to customize
+### Shared variables End
+
+## Resolve Mail Server
+:local MailServer "smtp.qq.com";
+:local MailPort "465";
+:local MailTls "yes";
+:local SendFrom "xyz@qq.com";                # Need to customize
+:local SendTo "abc@qq.com";                  # Need to customize
 :local MailIp;
 :set MailIp [:resolve $MailServer];
-:local MailPort "465";                  # Need to customize
-:local MailTls "yes";                   # Need to customize
-:local SendFrom "aaa@163.com";          # Need to customize
-:local SendTo "bbb@qq.com";             # Need to customize
 :delay 1s;
-### Shared variables End
+## Resolve End
 
 ### System variables
 :local SystemEmailText;
@@ -94,7 +97,7 @@
     
     #:log info ("About to send $Project E-mail")
     /tool e-mail send server=$MailIp port=$MailPort tls=$MailTls from=$SendFrom to=$SendTo subject=$Subject body=$SystemBody;
-    :delay 3s;
+    :delay 5s;
     # END SEND EMAIL
 }
 ### System Mail End
@@ -117,7 +120,7 @@
     
     #:log info ("About to send $Project E-mail")
     /tool e-mail send server=$MailIp port=$MailPort tls=$MailTls from=$SendFrom to=$SendTo subject=$Subject body=$PPPoEBody;
-    :delay 5s;
+    :delay 10s;
     # END SEND EMAIL
 }
 ### PPPoE Mail End
@@ -140,7 +143,7 @@
     
     #:log info ("About to send $Project E-mail")
     /tool e-mail send server=$MailIp port=$MailPort tls=$MailTls from=$SendFrom to=$SendTo subject=$Subject body=$ScriptBody;
-    :delay 3s;
+    :delay 5s;
     # END SEND EMAIL
 }
 ### Script Mail End
@@ -163,7 +166,7 @@
     
     #:log info ("About to send $Project E-mail")
     /tool e-mail send server=$MailIp port=$MailPort tls=$MailTls from=$SendFrom to=$SendTo subject=$Subject body=$AccountBody;
-    :delay 5s;
+    :delay 10s;
     # END SEND EMAIL
 }
 ### Account Mail End
@@ -186,7 +189,7 @@
     
     #:log info ("About to send $Project E-mail")
     /tool e-mail send server=$MailIp port=$MailPort tls=$MailTls from=$SendFrom to=$SendTo subject=$Subject body=$FirewallBody;
-    :delay 3s;
+    :delay 5s;
     # END SEND EMAIL
 }
 ### Firewall Mail End
@@ -209,7 +212,7 @@
     
     #:log info ("About to send $Project E-mail")
     /tool e-mail send server=$MailIp port=$MailPort tls=$MailTls from=$SendFrom to=$SendTo subject=$Subject body=$DHCPBody;
-    :delay 5s;
+    :delay 10s;
     # END SEND EMAIL
 }
 ### DHCP Mail End
