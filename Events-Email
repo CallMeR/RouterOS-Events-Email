@@ -16,7 +16,7 @@
 :local MailPort "465";
 :local MailTls "yes";
 :local SendFrom "your_163_email_account@163.com";    # Need to customize
-:local SendTo "your_qq__email_account@qq.com";       # Need to customize
+:local SendTo "your_qq_email_account@qq.com";        # Need to customize
 :local MailIp;
 :set MailIp [:resolve $MailServer ];
 :delay 1s;
